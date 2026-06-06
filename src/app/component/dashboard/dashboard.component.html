@@ -1,0 +1,64 @@
+<div class="min-h-screen bg-slate-900 text-slate-100 flex">
+
+  <aside class="w-64 bg-slate-950 border-r border-slate-800 flex flex-col justify-between p-4">
+    <div>
+      <div class="flex items-center gap-3 px-2 py-4 border-b border-slate-800 mb-6">
+        <div
+          class="w-8 h-8 bg-indigo-600 rounded-lg flex items-center justify-center font-bold text-white shadow-md shadow-indigo-500/20">
+          D
+        </div>
+        <span class="font-semibold tracking-wide text-lg text-white">Dobby Panel</span>
+      </div>
+
+      <nav class="space-y-1">
+        <a href="#"
+           class="flex items-center gap-3 px-3 py-2.5 rounded-xl bg-indigo-600 text-white font-medium shadow-lg shadow-indigo-600/10 transition-colors">
+          <span class="text-sm">🧠 Fact Database</span>
+        </a>
+        <a href="#"
+           class="flex items-center gap-3 px-3 py-2.5 rounded-xl text-slate-400 hover:text-slate-200 hover:bg-slate-900/60 transition-colors">
+          <span class="text-sm">🔥 Recent Roasts</span>
+        </a>
+      </nav>
+    </div>
+
+    <div class="flex items-center gap-3 p-2 bg-slate-900/50 rounded-xl border border-slate-800/60">
+      <div
+        class="w-10 h-10 rounded-full bg-slate-700 flex items-center justify-center font-bold text-sm border-2 border-indigo-500">
+        U
+      </div>
+      <div class="flex flex-col min-w-0">
+        <span class="text-sm font-medium text-white truncate">AdminUser</span>
+        <span class="text-xs text-slate-500 truncate">#0001</span>
+      </div>
+    </div>
+  </aside>
+
+  <main class="flex-1 flex flex-col min-w-0">
+    <header
+      class="h-16 border-b border-slate-800 flex items-center justify-between px-8 bg-slate-900/50 backdrop-blur-sm">
+      <h2 class="text-lg font-semibold text-white">Server DashboardComponent</h2>
+      <div class="flex items-center gap-3">
+        @if (userService.currentUser(); as user) {
+          <img [src]="user.avatar_url || 'discord-icon.svg'" alt="Discord User Profile Picture"
+               class="w-8 h-8 rounded-full border border-slate-700">
+
+          <span class="text-sm font-medium text-slate-200">
+      Welcome, <span class="text-indigo-400 font-semibold">{{ user.display_name }}</span>!
+    </span>
+        } @else {
+          <span class="text-sm text-slate-500 animate-pulse">Loading profile...</span>
+        }
+      </div>
+      <a routerLink="/login" (click)="handleLogout()"
+         class="text-sm font-medium text-slate-400 hover:text-rose-400 transition-colors cursor-pointer decoration-0">
+        Logout
+      </a>
+    </header>
+
+    <div class="p-8 max-w-5xl w-full mx-auto">
+      <router-outlet></router-outlet>
+    </div>
+  </main>
+
+</div>
