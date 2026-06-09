@@ -14,7 +14,6 @@ export interface UserProfile {
 })
 export class UserService {
   private readonly userUrlEndPoint = new URL('users/me', environment.backendUrl).toString();
-
   // Define a reactive state signal to hold our user profile data globally
   currentUser = signal<UserProfile | null>(null);
 

@@ -4,11 +4,17 @@ import { DashboardComponent } from './component/dashboard/dashboard.component';
 import { BotConfig } from './component/bot-config/bot-config';
 import { AuthService } from './service/auth/auth.service';
 import { inject } from '@angular/core';
+import { LogsComponent } from './component/logs/log.component';
 
 // Guard for Public Pages (LoginComponent)
 const guestGuard = async () => {
   const authService = inject(AuthService);
   const router = inject(Router);
+  const url = router.url;
+
+  if (url === '/logs') {
+    return true;
+  }
 
   if (authService.isAuthenticated()) {
     await router.navigate(['/dashboard']);
@@ -25,11 +31,9 @@ const authGuard = async (route: ActivatedRouteSnapshot) => {
   const hasLocalToken = authService.isAuthenticated();
   const hasUrlToken = !!route.queryParams['token'];
 
-  // If either is true, let them pass!
   if (hasLocalToken || hasUrlToken) {
     return true;
   } else {
-    // No token anywhere, kick them to login
     await router.navigate(['/login']);
     return false;
   }
@@ -37,6 +41,7 @@ const authGuard = async (route: ActivatedRouteSnapshot) => {
 
 export const routes: Routes = [
   { path: '', redirectTo: 'login', pathMatch: 'full' },
+  { path: 'logs', component: LogsComponent, canActivate: [authGuard] },
   {
     path: 'login',
     component: LoginComponent,

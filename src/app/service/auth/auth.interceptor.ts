@@ -8,6 +8,7 @@ import { UserService } from '../user/user.service';
 export const authInterceptor: HttpInterceptorFn = (req, next) => {
   const authService = inject(AuthService);
   const router = inject(Router);
+  const userService = inject(UserService);
   const token = authService.getToken();
 
   let modifiedReq = req;
@@ -25,7 +26,7 @@ export const authInterceptor: HttpInterceptorFn = (req, next) => {
       if (error.status === 401) {
         console.warn('Session expired or unauthorized. Logging out...');
         authService.logout();
-        inject(UserService).clearUser();
+        userService.clearUser();
 
         // Handle the routing promise natively without blocking the observable stream return
         router.navigate(['/login']).then(() => {
