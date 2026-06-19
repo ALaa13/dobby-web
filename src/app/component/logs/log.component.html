@@ -150,7 +150,7 @@
     <!-- EMPTY STATE: Displayed when no logs match the filters -->
     @if (filteredLogs.length === 0) {
       <div class="flex items-center justify-center h-full text-gray-500 italic py-10">
-        @if (logs.length === 0) {
+        @if (filteredLogs.length === 0) {
           Waiting for logs...
         } @else {
           No logs match filters

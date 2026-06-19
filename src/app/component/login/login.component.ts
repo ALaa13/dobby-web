@@ -1,9 +1,10 @@
 import { Component } from '@angular/core';
 import { environment } from '@env/environment';
+import { NgOptimizedImage } from '@angular/common';
 
 @Component({
   selector: 'app-login',
-  imports: [],
+  imports: [NgOptimizedImage],
   templateUrl: './login.component.html',
   styleUrl: './login.component.css',
 })
