@@ -1,0 +1,185 @@
+<div class="h-full flex flex-col gap-6 overflow-hidden">
+
+  <div
+    class="shrink-0 bg-slate-800/40 border border-slate-800/80 p-6 rounded-2xl flex flex-col md:flex-row md:items-center justify-between gap-4">
+    <div>
+      <h3 class="text-lg font-semibold text-white mb-1">Fact Database Explorer</h3>
+      <p class="text-sm text-slate-400">Select a guild to manage user facts used during contextual roast generation.</p>
+    </div>
+
+    <div class="relative min-w-70">
+      <button
+        (click)="isDropdownOpen.set(!isDropdownOpen())"
+        type="button"
+        class="w-full flex items-center justify-between bg-slate-950 border border-slate-700 text-sm text-slate-200 rounded-xl px-4 py-3 focus:outline-none focus:border-indigo-500 transition-all cursor-pointer">
+
+        <div class="flex items-center gap-2.5">
+          @if (activeGuild(); as guild) {
+            @if (guild.icon) {
+              <img [ngSrc]="'https://cdn.discordapp.com/icons/' + guild.id + '/' + guild.icon + '.png'"
+                   alt="Server Icon"
+                   class="w-5 h-5 rounded-md object-cover"
+                   width="20"
+                   height="20"
+                   priority>
+            } @else {
+              <div
+                class="w-5 h-5 rounded-md bg-indigo-600 flex items-center justify-center text-[10px] font-bold text-white">
+                {{ guild.name.substring(0, 2).toUpperCase() }}
+              </div>
+            }
+            <span class="truncate">{{ guild.name }}</span>
+          } @else {
+            <span class="text-slate-500">Select a Discord server</span>
+          }
+        </div>
+        <span class="text-slate-500 text-xs transition-transform duration-200"
+              [class.rotate-180]="isDropdownOpen()">▼</span>
+      </button>
+
+      @if (isDropdownOpen()) {
+        <div class="fixed inset-0 z-10" (click)="isDropdownOpen.set(false)"></div>
+
+        <div
+          class="absolute right-0 left-0 mt-2 bg-slate-950 border border-slate-800 rounded-xl shadow-xl max-h-60 overflow-y-auto z-20 p-1.5 space-y-1 custom-scrollbar">
+          @for (guild of guilds(); track guild.id) {
+            <button
+              (click)="selectGuild(guild.id)"
+              type="button"
+              class="w-full flex items-center gap-2.5 px-3 py-2.5 text-sm text-slate-300 hover:text-white hover:bg-slate-900 rounded-lg transition-colors text-left cursor-pointer"
+              [class.bg-slate-900]="guild.id === selectedGuildId()"
+              [class.text-indigo-400]="guild.id === selectedGuildId()">
+
+              @if (guild.icon) {
+                <img [src]="'https://cdn.discordapp.com/icons/' + guild.id + '/' + guild.icon + '.png'"
+                     alt="" class="w-5 h-5 rounded-md object-cover">
+              } @else {
+                <div
+                  class="w-5 h-5 rounded-md bg-slate-800 border border-slate-700 flex items-center justify-center text-[10px] font-bold text-slate-400">
+                  {{ guild.name.substring(0, 2).toUpperCase() }}
+                </div>
+              }
+              <span class="truncate flex-1">{{ guild.name }}</span>
+
+              @if (guild.id === selectedGuildId()) {
+                <span class="text-indigo-500 font-bold text-xs">✓</span>
+              }
+            </button>
+          } @empty {
+            <div class="px-4 py-3 text-xs text-slate-500 text-center">No active Discord servers found</div>
+          }
+        </div>
+      }
+    </div>
+  </div>
+
+  <div class="shrink-0 grid grid-cols-1 sm:grid-cols-3 gap-4">
+    <div class="bg-slate-800/30 border border-slate-800/60 p-4 rounded-xl">
+      <span class="text-xs font-medium text-slate-500 uppercase tracking-wider">Indexed Profiles</span>
+      <h4 class="text-2xl font-bold text-white mt-1">142</h4>
+    </div>
+
+    <div class="bg-slate-800/30 border border-slate-800/60 p-4 rounded-xl">
+      <span class="text-xs font-medium text-slate-500 uppercase tracking-wider">Total Stored Facts</span>
+      <h4 class="text-2xl font-bold text-indigo-400 mt-1">1,204</h4>
+    </div>
+
+    <div class="bg-slate-800/30 border border-slate-800/60 p-4 rounded-xl">
+      <span class="text-xs font-medium text-slate-500 uppercase tracking-wider">Avg Roastability Score</span>
+      <h4 class="text-2xl font-bold text-emerald-400 mt-1">8.4 / 10</h4>
+    </div>
+  </div>
+
+  <div class="flex-1 min-h-0 bg-slate-800/40 border border-slate-800 rounded-2xl overflow-hidden flex flex-col">
+
+    <div
+      class="shrink-0 p-4 border-b border-slate-800 flex flex-col sm:flex-row gap-3 justify-between items-center bg-slate-900/30">
+      <div class="relative w-full sm:max-w-xs">
+        <input
+          type="text"
+          placeholder="Search by ID, username, or facts..."
+          [value]="searchQuery()"
+          (input)="onSearchInput($event)"
+          class="w-full bg-slate-950 border border-slate-800 focus:border-indigo-500 rounded-xl pl-4 pr-10 py-2.5 text-sm text-white focus:outline-none">
+
+        <div class="absolute inset-y-0 right-3 flex items-center">
+          @if (searchQuery()) {
+            <!-- ✕ Clear Button -->
+            <button
+              (click)="resetSearch()"
+              type="button"
+              class="text-slate-400 hover:text-white transition-colors text-xs bg-slate-800 hover:bg-slate-700 rounded-full h-5 w-5 flex items-center justify-center focus:outline-none">
+              ✕
+            </button>
+          } @else {
+            <!-- 🔍 Static Search Icon -->
+            <span class="text-slate-500 text-sm pointer-events-none">🔍</span>
+          }
+        </div>
+      </div>
+
+      <button
+        class="w-full sm:w-auto text-xs bg-rose-950/40 hover:bg-rose-900/60 text-rose-300 border border-rose-800/60 font-medium px-4 py-2.5 rounded-xl cursor-pointer">
+        ⚠️ Reset Guild Facts
+      </button>
+    </div>
+
+    <div class="flex-1 min-h-0 overflow-y-auto custom-scrollbar">
+      @if (selectedGuildId() && hasAnyFacts()) {
+        <div class="p-6 pb-16 columns-1 md:columns-2 gap-6 space-y-6">
+          @for (user of filteredUsers(); track user.id) {
+            @if ((user.user_facts ?? []).length > 0) {
+              <div
+                class="break-inside-avoid bg-slate-950/60 border border-slate-800/80 rounded-xl p-5 flex flex-col mb-6">
+
+                <div class="flex items-center justify-between border-b border-slate-800/60 pb-3">
+                  <div class="flex items-center gap-3">
+                    <div
+                      class="w-9 h-9 rounded-full bg-indigo-950 border border-indigo-500/30 flex items-center justify-center font-bold text-xs text-indigo-300 uppercase">
+                      {{ user.display_name.substring(0, 2) || '??' }}
+                    </div>
+                    <div>
+                      <h4 class="text-sm font-semibold text-white">{{ user.display_name }}</h4>
+                      <p class="text-xs text-slate-500">ID: {{ user.discord_user_id }}</p>
+                    </div>
+                  </div>
+                  <span class="text-[10px] bg-slate-800 text-slate-300 px-2 py-0.5 rounded-md font-mono">
+                    {{ (user.user_facts ?? []).length }} {{ (user.user_facts ?? []).length === 1 ? 'fact' : 'facts' }}
+                  </span>
+                </div>
+
+                <div class="relative mt-4">
+                  <ul class="space-y-2.5 overflow-y-auto custom-scrollbar max-h-55 pr-2 pb-6">
+                    @for (fact of (user.user_facts ?? []); track fact.id) {
+                      <li
+                        class="group flex items-start justify-between gap-2 text-xs text-slate-300 bg-slate-900/40 p-2.5 rounded-lg border border-slate-800/40 hover:border-slate-700/60 transition-colors">
+                        <span class="min-w-0 break-all select-text">{{ fact.fact_text }}</span>
+                        <button (click)="deleteFact(fact.id)"
+                                class="opacity-0 group-hover:opacity-100 text-slate-500 hover:text-rose-400 transition-all shrink-0 cursor-pointer">
+                          🗑️
+                        </button>
+                      </li>
+                    }
+                  </ul>
+
+                  @if ((user.user_facts ?? []).length > 4) {
+                    <div
+                      class="pointer-events-none absolute bottom-0 left-0 right-0 h-8 bg-linear-to-t from-slate-950/90 to-transparent rounded-b-xl"></div>
+                  }
+                </div>
+
+              </div>
+            }
+          }
+        </div>
+      } @else {
+        <div class="p-12 text-center">
+          <p class="text-sm text-slate-500">
+            {{ !selectedGuildId() ? 'Please select or verify a Discord server connection above.' : 'No facts recorded for this server yet.' }}
+          </p>
+        </div>
+      }
+    </div>
+
+  </div>
+</div>

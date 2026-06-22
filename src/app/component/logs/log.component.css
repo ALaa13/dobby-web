@@ -1,6 +1,7 @@
 cdk-virtual-scroll-viewport {
   display: flex;
   flex-direction: column;
+
   div:first-child {
     margin-top: 0.5rem;
   }

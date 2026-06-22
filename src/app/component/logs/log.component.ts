@@ -1,9 +1,10 @@
 import { ChangeDetectorRef, Component, OnDestroy, OnInit, ViewChild } from '@angular/core';
 import { Subscription } from 'rxjs';
-import { LogService, ParsedLog } from '../../service/log/log.service';
+import { LogService } from '../../service/log/log.service';
 import { FormsModule } from '@angular/forms';
 import { CdkVirtualScrollViewport, ScrollingModule } from '@angular/cdk/scrolling';
 import { DomSanitizer, SafeHtml } from '@angular/platform-browser';
+import { ParsedLog } from '../../service/log/log.types';
 
 @Component({
   selector: 'app-logs',
@@ -11,13 +12,12 @@ import { DomSanitizer, SafeHtml } from '@angular/platform-browser';
   styleUrls: ['./log.component.css'],
   imports: [FormsModule, ScrollingModule],
 })
-export class LogsComponent implements OnInit, OnDestroy {
+export class LogComponent implements OnInit, OnDestroy {
   @ViewChild('viewport') private viewport!: CdkVirtualScrollViewport;
 
   private streamSubscription?: Subscription;
   allLogsCache: ParsedLog[] = [];
   filteredLogs: ParsedLog[] = [];
-
   // UI States
   autoScroll = true;
   paused = false;

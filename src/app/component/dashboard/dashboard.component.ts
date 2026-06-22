@@ -1,12 +1,13 @@
-import { Component, inject, OnInit } from '@angular/core';
+import { Component, inject, OnInit, signal } from '@angular/core';
 import { ActivatedRoute, Router, RouterLink, RouterOutlet } from '@angular/router';
 import { AuthService } from '../../service/auth/auth.service';
 import { UserService } from '../../service/user/user.service';
+import { NgOptimizedImage } from '@angular/common';
 
 @Component({
   selector: 'app-dashboard',
   standalone: true,
-  imports: [RouterLink, RouterOutlet],
+  imports: [RouterLink, RouterOutlet, NgOptimizedImage],
   templateUrl: './dashboard.component.html',
   styleUrl: './dashboard.component.css',
 })
@@ -15,13 +16,16 @@ export class DashboardComponent implements OnInit {
   private route = inject(ActivatedRoute);
   private router = inject(Router);
   private authService = inject(AuthService);
-  protected userService = inject(UserService); // marked protected so template can read it
+  protected userService = inject(UserService);
+  private tokenHandled = false;
+  isSidebarOpen = signal(false);
 
   ngOnInit(): void {
-    this.route.queryParams.subscribe(async (params) => {
-      const token = params['token'];
+    this.route.queryParams.subscribe(async () => {
+      const token = this.route.snapshot.queryParams['token'];
 
       if (token) {
+        this.tokenHandled = true;
         this.authService.setToken(token);
 
         await this.router.navigate([], {
@@ -32,7 +36,9 @@ export class DashboardComponent implements OnInit {
 
         // Load the profile right after securing the new token
         this.loadUserProfile();
-      } else if (this.authService.isAuthenticated()) {
+        return;
+      }
+      if (!this.tokenHandled && this.authService.isAuthenticated()) {
         // If they just navigated straight here and are already logged in, load profile
         this.loadUserProfile();
       }
@@ -41,7 +47,7 @@ export class DashboardComponent implements OnInit {
 
   private loadUserProfile(): void {
     this.userService.fetchProfile().subscribe({
-      next: (data) => console.log('Profile loaded for:', data.display_name),
+      next: (data) => console.log('Profile loaded'),
       error: (err) => console.error('Could not retrieve user profile tracking data', err),
     });
   }

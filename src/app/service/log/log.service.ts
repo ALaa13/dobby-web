@@ -3,14 +3,7 @@ import { BehaviorSubject } from 'rxjs';
 import { fetchEventSource } from '@microsoft/fetch-event-source';
 import { environment } from '@env/environment';
 import { AuthService } from '../auth/auth.service';
-
-export interface ParsedLog {
-  timestamp: string;
-  level: string;
-  logger: string;
-  message: string;
-  raw: string;
-}
+import { ParsedLog } from './log.types';
 
 @Injectable({ providedIn: 'root' })
 export class LogService {

@@ -1,17 +1,17 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 
-import { BotConfig } from './bot-config';
+import { FactDatabaseComponent } from './fact-database.component';
 
-describe('BotConfig', () => {
-  let component: BotConfig;
-  let fixture: ComponentFixture<BotConfig>;
+describe('FactDatabaseComponent', () => {
+  let component: FactDatabaseComponent;
+  let fixture: ComponentFixture<FactDatabaseComponent>;
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      imports: [BotConfig],
+      imports: [FactDatabaseComponent],
     }).compileComponents();
 
-    fixture = TestBed.createComponent(BotConfig);
+    fixture = TestBed.createComponent(FactDatabaseComponent);
     component = fixture.componentInstance;
     await fixture.whenStable();
   });

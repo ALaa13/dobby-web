@@ -1,10 +1,10 @@
 import { ActivatedRouteSnapshot, Router, Routes } from '@angular/router';
 import { LoginComponent } from './component/login/login.component';
 import { DashboardComponent } from './component/dashboard/dashboard.component';
-import { BotConfig } from './component/bot-config/bot-config';
 import { AuthService } from './service/auth/auth.service';
 import { inject } from '@angular/core';
-import { LogsComponent } from './component/logs/log.component';
+import { LogComponent } from './component/logs/log.component';
+import { FactDatabaseComponent } from './component/fact-database/fact-database.component';
 
 // Guard for Public Pages (LoginComponent)
 const guestGuard = async () => {
@@ -41,7 +41,7 @@ const authGuard = async (route: ActivatedRouteSnapshot) => {
 
 export const routes: Routes = [
   { path: '', redirectTo: 'login', pathMatch: 'full' },
-  { path: 'logs', component: LogsComponent, canActivate: [authGuard] },
+  { path: 'logs', component: LogComponent, canActivate: [authGuard] },
   {
     path: 'login',
     component: LoginComponent,
@@ -51,7 +51,7 @@ export const routes: Routes = [
     path: 'dashboard',
     component: DashboardComponent,
     canActivate: [authGuard],
-    children: [{ path: '', component: BotConfig }],
+    children: [{ path: '', component: FactDatabaseComponent }],
   },
   { path: '**', redirectTo: 'login' },
 ];
