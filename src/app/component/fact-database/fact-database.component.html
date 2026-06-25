@@ -119,9 +119,44 @@
       </div>
 
       <button
-        class="w-full sm:w-auto text-xs bg-rose-950/40 hover:bg-rose-900/60 text-rose-300 border border-rose-800/60 font-medium px-4 py-2.5 rounded-xl cursor-pointer">
+        (click)="showResetConfirm.set(true)"
+        [disabled]="(users() ?? []).length === 0"
+        class="w-full sm:w-auto text-xs bg-rose-950/40 text-rose-300 border border-rose-800/60 font-medium px-4 py-2.5 rounded-xl transition-colors cursor-default enabled:hover:bg-rose-900/60 enabled:cursor-pointer disabled:opacity-30 disabled:border-rose-950">
         ⚠️ Reset Guild Facts
       </button>
+
+      @if (showResetConfirm()) {
+        <div
+          class="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-950/80 backdrop-blur-xs animate-fade-in">
+
+          <div class="w-full max-w-md bg-slate-900 border border-slate-800 rounded-2xl p-6 shadow-2xl space-y-4">
+
+            <div class="flex items-center gap-3 text-rose-400">
+              <span class="text-xl">⚠️</span>
+              <h3 class="text-base font-semibold text-white">Danger Zone: Reset Guild Facts</h3>
+            </div>
+
+            <p class="text-xs text-slate-400 leading-relaxed">
+              Are you absolutely sure you want to wipe all user profiles and saved facts for this server? This action is
+              <strong class="text-rose-300">permanent</strong> and cannot be undone.
+            </p>
+
+            <div class="flex items-center justify-end gap-2.5 pt-2">
+              <button
+                (click)="showResetConfirm.set(false)"
+                class="px-3.5 py-2 text-xs font-medium text-slate-400 hover:text-white bg-slate-800/50 hover:bg-slate-800 border border-slate-700/60 rounded-xl cursor-pointer transition-colors">
+                Cancel
+              </button>
+              <button
+                (click)="confirmReset(); showResetConfirm.set(false)"
+                class="px-4 py-2 text-xs font-medium text-rose-300 bg-rose-950/60 hover:bg-rose-900/80 border border-rose-800/80 rounded-xl cursor-pointer transition-colors">
+                Yes, Delete Everything
+              </button>
+            </div>
+
+          </div>
+        </div>
+      }
     </div>
 
     <div class="flex-1 min-h-0 overflow-y-auto custom-scrollbar">
@@ -134,18 +169,31 @@
 
                 <div class="flex items-center justify-between border-b border-slate-800/60 pb-3">
                   <div class="flex items-center gap-3">
-                    <div
-                      class="w-9 h-9 rounded-full bg-indigo-950 border border-indigo-500/30 flex items-center justify-center font-bold text-xs text-indigo-300 uppercase">
-                      {{ user.display_name.substring(0, 2) || '??' }}
-                    </div>
+                    <!-- 💡 Dynamic Avatar with Initials Fallback -->
+                    @if (user.avatar_hash) {
+                      <img
+                        [ngSrc]="'https://cdn.discordapp.com/avatars/' + user.discord_user_id + '/' + user.avatar_hash + (user.avatar_hash.startsWith('a_') ? '.gif' : '.png') + '?size=64'"
+                        [alt]="user.display_name"
+                        class="w-9 h-9 rounded-full border border-indigo-500/30 object-cover"
+                        (error)="user.avatar_hash = null"
+                        width="36"
+                        height="36"
+                      />
+                    } @else {
+                      <div
+                        class="w-9 h-9 rounded-full bg-indigo-950 border border-indigo-500/30 flex items-center justify-center font-bold text-xs text-indigo-300 uppercase">
+                        {{ user.display_name.substring(0, 2) || '??' }}
+                      </div>
+                    }
+
                     <div>
                       <h4 class="text-sm font-semibold text-white">{{ user.display_name }}</h4>
                       <p class="text-xs text-slate-500">ID: {{ user.discord_user_id }}</p>
                     </div>
                   </div>
                   <span class="text-[10px] bg-slate-800 text-slate-300 px-2 py-0.5 rounded-md font-mono">
-                    {{ (user.user_facts ?? []).length }} {{ (user.user_facts ?? []).length === 1 ? 'fact' : 'facts' }}
-                  </span>
+        {{ (user.user_facts ?? []).length }} {{ (user.user_facts ?? []).length === 1 ? 'fact' : 'facts' }}
+      </span>
                 </div>
 
                 <div class="relative mt-4">

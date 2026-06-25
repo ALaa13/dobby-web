@@ -13,6 +13,7 @@ export interface UserProfile {
   discord_user_id: string;
   guild_id: string;
   display_name: string;
+  avatar_hash: string | null;
   created_at: string;
   user_facts?: Fact[];
 }

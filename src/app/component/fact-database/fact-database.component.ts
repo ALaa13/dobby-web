@@ -69,6 +69,7 @@ export class FactDatabaseComponent {
 
     return matches;
   });
+  showResetConfirm = signal<boolean>(false);
 
   constructor() {
     // Automatically sets the dropdown to select the first server when data arrives
@@ -97,6 +98,17 @@ export class FactDatabaseComponent {
         console.error('Failed to pull server facts:', err);
       },
     });
+  }
+
+  confirmReset(): void {
+    const currentGuild = this.activeGuild();
+
+    if (currentGuild) {
+      console.log("facts have been purged");
+      this.purgeGuildFacts(currentGuild.id);
+    } else {
+      console.warn('Cannot purge facts: No active guild is currently selected.');
+    }
   }
 
   selectGuild(id: string): void {
@@ -146,6 +158,17 @@ export class FactDatabaseComponent {
         console.error('Failed to delete on server, rolling back UI:', err);
         // If the backend fails, this safely restores the card AND its facts instantly!
         this.users.set(previousUsers);
+      },
+    });
+  }
+
+  purgeGuildFacts(guildId: string): void {
+    this.http.delete<void>(`${this.guildUrlEndPoint}/${guildId}`).subscribe({
+      next: () => {
+        this.users.set([]);
+      },
+      error: (err) => {
+        console.error('Failed to purge server facts:', err);
       },
     });
   }
