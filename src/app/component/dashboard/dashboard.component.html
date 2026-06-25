@@ -1,47 +1,41 @@
 <div class="h-screen bg-slate-900 text-slate-100 flex relative overflow-hidden">
-
   @if (isSidebarOpen()) {
     <div
       (click)="isSidebarOpen.set(false)"
-      class="fixed inset-0 bg-slate-950/60 backdrop-blur-sm z-40 lg:hidden">
-    </div>
+      class="fixed inset-0 bg-slate-950/60 backdrop-blur-sm z-40 lg:hidden"
+    ></div>
   }
 
   <aside
     [class.-translate-x-full]="!isSidebarOpen()"
     [class.translate-x-0]="isSidebarOpen()"
-    class="fixed inset-y-0 left-0 w-64 bg-slate-950 border-r border-slate-800 flex flex-col justify-between p-4 z-50 transition-transform duration-300 ease-in-out lg:static lg:translate-x-0">
-
+    class="fixed inset-y-0 left-0 w-64 bg-slate-950 border-r border-slate-800 flex flex-col justify-between p-4 z-50 transition-transform duration-300 ease-in-out lg:static lg:translate-x-0"
+  >
     <div>
       <div class="flex items-center justify-between px-2 py-4 border-b border-slate-800 mb-6">
         <div class="flex items-center gap-3">
           <div
-            class="relative w-15 h-15 bg-slate-800 rounded-lg overflow-hidden shrink-0 shadow-md shadow-indigo-500/10">
-            <img
-              ngSrc="dobby.jpg"
-              alt="Dobby Logo"
-              class="object-cover"
-              fill
-              priority>
+            class="relative w-15 h-15 bg-slate-800 rounded-lg overflow-hidden shrink-0 shadow-md shadow-indigo-500/10"
+          >
+            <img ngSrc="dobby.jpg" alt="Dobby Logo" class="object-cover" fill priority />
           </div>
 
-          <span class="font-semibold tracking-wide text-lg text-white">
-            Dobby Panel
-          </span>
+          <span class="font-semibold tracking-wide text-lg text-white"> Dobby Panel </span>
         </div>
 
         <button
           (click)="isSidebarOpen.set(false)"
-          class="lg:hidden p-1 text-slate-400 hover:text-white">
-          <svg xmlns="http://www.w3.org/2000/svg"
-               fill="none"
-               viewBox="0 0 24 24"
-               stroke-width="2"
-               stroke="currentColor"
-               class="w-5 h-5">
-            <path stroke-linecap="round"
-                  stroke-linejoin="round"
-                  d="M6 18L18 6M6 6l12 12" />
+          class="lg:hidden p-1 text-slate-400 hover:text-white"
+        >
+          <svg
+            xmlns="http://www.w3.org/2000/svg"
+            fill="none"
+            viewBox="0 0 24 24"
+            stroke-width="2"
+            stroke="currentColor"
+            class="w-5 h-5"
+          >
+            <path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12" />
           </svg>
         </button>
       </div>
@@ -49,13 +43,15 @@
       <nav class="space-y-1">
         <a
           href="#"
-          class="flex items-center gap-3 px-3 py-2.5 rounded-xl bg-indigo-600 text-white font-medium shadow-lg shadow-indigo-600/10">
+          class="flex items-center gap-3 px-3 py-2.5 rounded-xl bg-indigo-600 text-white font-medium shadow-lg shadow-indigo-600/10"
+        >
           <span class="text-sm">Fact Database</span>
         </a>
 
         <a
           href="#"
-          class="flex items-center gap-3 px-3 py-2.5 rounded-xl text-slate-400 hover:text-slate-200 hover:bg-slate-900/60">
+          class="flex items-center gap-3 px-3 py-2.5 rounded-xl text-slate-400 hover:text-slate-200 hover:bg-slate-900/60"
+        >
           <span class="text-sm">Recent Roasts</span>
         </a>
       </nav>
@@ -63,69 +59,64 @@
 
     <div class="flex items-center gap-3 p-2 bg-slate-900/50 rounded-xl border border-slate-800/60">
       @if (userService.currentUser(); as user) {
-
         <img
           [ngSrc]="user.avatar_url || 'discord-icon.svg'"
           [alt]="user.display_name"
           class="w-10 h-10 rounded-full border-2 border-indigo-500 object-cover"
           width="40"
           height="40"
-          priority>
+          priority
+        />
 
         <div class="flex flex-col min-w-0">
           <span class="text-sm font-medium text-white truncate">
             {{ user.display_name }}
           </span>
-          <span class="text-xs text-slate-500">
-            Active Profile
-          </span>
+          <span class="text-xs text-slate-500"> Active Profile </span>
         </div>
-
       } @else {
-
-        <div class="w-10 h-10 rounded-full bg-slate-800 animate-pulse border border-slate-700 shrink-0"></div>
-
+        <div
+          class="w-10 h-10 rounded-full bg-slate-800 animate-pulse border border-slate-700 shrink-0"
+        ></div>
       }
     </div>
   </aside>
 
   <main class="flex-1 flex flex-col min-w-0 overflow-hidden">
-
     <header
-      class="h-16 shrink-0 border-b border-slate-800 flex items-center justify-between px-4 lg:px-8 bg-slate-900/50 backdrop-blur-sm">
-
+      class="h-16 shrink-0 border-b border-slate-800 flex items-center justify-between px-4 lg:px-8 bg-slate-900/50 backdrop-blur-sm"
+    >
       <div class="flex items-center gap-3">
-
         <button
           (click)="isSidebarOpen.set(!isSidebarOpen())"
-          class="lg:hidden p-2 -ml-2 rounded-lg text-slate-400 hover:text-white hover:bg-slate-800/50">
-
-          <svg xmlns="http://www.w3.org/2000/svg"
-               fill="none"
-               viewBox="0 0 24 24"
-               stroke-width="2"
-               stroke="currentColor"
-               class="w-6 h-6">
-            <path stroke-linecap="round"
-                  stroke-linejoin="round"
-                  d="M3.75 6.75h16.5M3.75 12h16.5m-16.5 5.25h16.5" />
+          class="lg:hidden p-2 -ml-2 rounded-lg text-slate-400 hover:text-white hover:bg-slate-800/50"
+        >
+          <svg
+            xmlns="http://www.w3.org/2000/svg"
+            fill="none"
+            viewBox="0 0 24 24"
+            stroke-width="2"
+            stroke="currentColor"
+            class="w-6 h-6"
+          >
+            <path
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              d="M3.75 6.75h16.5M3.75 12h16.5m-16.5 5.25h16.5"
+            />
           </svg>
-
         </button>
 
-        <h2 class="text-md lg:text-lg font-semibold text-white">
-          Server Dashboard
-        </h2>
-
+        <h2 class="text-md lg:text-lg font-semibold text-white">Server Dashboard</h2>
       </div>
 
       <a
         routerLink="/login"
         (click)="handleLogout()"
-        class="text-sm font-medium text-slate-400 hover:text-rose-400 cursor-pointer decoration-0">
+        class="text-sm font-medium text-slate-400 hover:text-rose-400 cursor-pointer decoration-0"
+      >
         Logout
       </a>
-
     </header>
 
     <div class="flex-1 min-h-0 p-4 lg:p-8 overflow-hidden">
@@ -133,7 +124,5 @@
         <router-outlet />
       </div>
     </div>
-
   </main>
-
 </div>

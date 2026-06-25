@@ -104,7 +104,7 @@ export class FactDatabaseComponent {
     const currentGuild = this.activeGuild();
 
     if (currentGuild) {
-      console.log("facts have been purged");
+      console.log('facts have been purged');
       this.purgeGuildFacts(currentGuild.id);
     } else {
       console.warn('Cannot purge facts: No active guild is currently selected.');

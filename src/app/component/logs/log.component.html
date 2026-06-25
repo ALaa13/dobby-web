@@ -1,9 +1,7 @@
 <!-- Main container: full screen, flex column, dark background, prevents overflow -->
 <div class="h-screen flex flex-col bg-gray-900 overflow-hidden">
-
   <!-- HEADER SECTION: Toolbar container with shadow and high z-index -->
   <div class="flex flex-col border-b border-gray-700 bg-gray-800 shadow-md z-10">
-
     <!-- TOP TOOLBAR: Title and action buttons (Copy, Download, Clear, Auto-scroll) -->
     <div class="flex justify-between items-center px-4 py-2">
       <h3 class="text-white font-semibold">Application Logs</h3>
@@ -12,27 +10,34 @@
         <!-- Copy logs to clipboard button -->
         <button
           (click)="copyLogs()"
-          class="px-3 py-1 text-sm bg-gray-600 hover:bg-gray-700 text-white rounded transition">
+          class="px-3 py-1 text-sm bg-gray-600 hover:bg-gray-700 text-white rounded transition"
+        >
           📋 Copy
         </button>
 
         <!-- Download logs as file button -->
         <button
           (click)="downloadLogs()"
-          class="px-3 py-1 text-sm bg-gray-600 hover:bg-gray-700 text-white rounded transition">
+          class="px-3 py-1 text-sm bg-gray-600 hover:bg-gray-700 text-white rounded transition"
+        >
           💾 Download
         </button>
 
         <!-- Clear all displayed logs button -->
         <button
           (click)="clearLogs()"
-          class="px-3 py-1 text-sm bg-red-600 hover:bg-red-700 text-white rounded transition">
+          class="px-3 py-1 text-sm bg-red-600 hover:bg-red-700 text-white rounded transition"
+        >
           🗑️ Clear
         </button>
 
         <!-- Auto-scroll toggle checkbox -->
         <label class="flex items-center gap-2 text-sm text-gray-300 cursor-pointer">
-          <input type="checkbox" [(ngModel)]="autoScroll" class="rounded bg-gray-700 border-gray-600">
+          <input
+            type="checkbox"
+            [(ngModel)]="autoScroll"
+            class="rounded bg-gray-700 border-gray-600"
+          />
           Auto-scroll
         </label>
       </div>
@@ -40,7 +45,6 @@
 
     <!-- FILTER BAR: Log level filters, search input, and display options -->
     <div class="flex gap-2 px-4 pb-2 flex-wrap">
-
       <!-- LOG LEVEL FILTER BUTTONS: ERROR, WARN, INFO, DEBUG -->
       <div class="flex gap-1">
         @for (level of logLevels; track level) {
@@ -51,7 +55,8 @@
             [class.bg-yellow-600]="level === 'WARN'"
             [class.bg-blue-600]="level === 'INFO'"
             [class.bg-gray-600]="level === 'DEBUG'"
-            class="px-2 py-1 text-xs rounded transition text-white font-bold">
+            class="px-2 py-1 text-xs rounded transition text-white font-bold"
+          >
             {{ level }}
           </button>
         }
@@ -64,18 +69,24 @@
           [(ngModel)]="searchText"
           (input)="onSearch()"
           placeholder="🔍 Search logs..."
-          class="w-full px-3 py-1 text-sm bg-gray-700 border border-gray-600 rounded text-white focus:outline-none focus:border-blue-500">
+          class="w-full px-3 py-1 text-sm bg-gray-700 border border-gray-600 rounded text-white focus:outline-none focus:border-blue-500"
+        />
       </div>
 
       <!-- HIGHLIGHT TOGGLE: Highlight search matches in log messages -->
       <label class="flex items-center gap-2 text-sm text-gray-300 cursor-pointer">
-        <input type="checkbox" [(ngModel)]="highlightSearch" (change)="applyFilters()" class="rounded">
+        <input
+          type="checkbox"
+          [(ngModel)]="highlightSearch"
+          (change)="applyFilters()"
+          class="rounded"
+        />
         Highlight
       </label>
 
       <!-- PAUSE TOGGLE: Stop streaming new logs temporarily -->
       <label class="flex items-center gap-2 text-sm text-gray-300 cursor-pointer">
-        <input type="checkbox" [(ngModel)]="paused" class="rounded">
+        <input type="checkbox" [(ngModel)]="paused" class="rounded" />
         Pause
       </label>
     </div>
@@ -85,23 +96,29 @@
   <cdk-virtual-scroll-viewport
     #viewport
     itemSize="94"
-    class="flex-1 overflow-y-auto font-mono p-3 bg-gray-950 custom-scrollbar space-y-3">
-
+    class="flex-1 overflow-y-auto font-mono p-3 bg-gray-950 custom-scrollbar space-y-3"
+  >
     <!-- LOG ITEMS: Renders each log entry using virtual scrolling -->
-    <div *cdkVirtualFor="let log of filteredLogs; trackBy: trackByFn; let i = index" class="min-h-20 h-auto mb-2">
-
+    <div
+      *cdkVirtualFor="let log of filteredLogs; trackBy: trackByFn; let i = index"
+      class="min-h-20 h-auto mb-2"
+    >
       <!-- LOG CARD: Individual log entry container with dynamic border color -->
-      <div [class]="getLogCardBorderClass(log.level)"
-           class="bg-gray-900 border border-gray-800 rounded-lg p-3 shadow-md flex flex-col justify-between h-full hover:border-gray-700 transition-all">
-
+      <div
+        [class]="getLogCardBorderClass(log.level)"
+        class="bg-gray-900 border border-gray-800 rounded-lg p-3 shadow-md flex flex-col justify-between h-full hover:border-gray-700 transition-all"
+      >
         <!-- LOG HEADER: Contains level badge, timestamp, logger name, and view raw button -->
-        <div class="flex flex-wrap items-center justify-between gap-2 border-b border-gray-800 pb-1.5 font-sans">
-
+        <div
+          class="flex flex-wrap items-center justify-between gap-2 border-b border-gray-800 pb-1.5 font-sans"
+        >
           <!-- LEFT SIDE: Level badge, timestamp, and logger name -->
           <div class="flex items-center gap-3">
             <!-- Log level badge with dynamic color -->
-            <span [class]="getLevelBadgeClass(log.level)"
-                  class="px-2 py-0.5 text-[10px] rounded font-bold uppercase tracking-wider">
+            <span
+              [class]="getLevelBadgeClass(log.level)"
+              class="px-2 py-0.5 text-[10px] rounded font-bold uppercase tracking-wider"
+            >
               {{ log.level }}
             </span>
 
@@ -111,7 +128,10 @@
             </span>
 
             <!-- Logger name with truncation and hover tooltip -->
-            <span class="text-purple-400 text-xs truncate max-w-xs md:max-w-md font-mono" [title]="log.logger">
+            <span
+              class="text-purple-400 text-xs truncate max-w-xs md:max-w-md font-mono"
+              [title]="log.logger"
+            >
               {{ log.logger }}
             </span>
           </div>
@@ -120,7 +140,8 @@
           <div class="flex items-center gap-2">
             <button
               (click)="toggleDetails(i)"
-              class="text-gray-400 hover:text-white transition text-[11px] bg-gray-800 px-2 py-0.5 rounded border border-gray-700">
+              class="text-gray-400 hover:text-white transition text-[11px] bg-gray-800 px-2 py-0.5 rounded border border-gray-700"
+            >
               {{ expandedIndex === i ? '✕ Close Raw' : '⚙ View Raw' }}
             </button>
           </div>
@@ -128,22 +149,28 @@
 
         <!-- LOG MESSAGE: Main content area showing the log message (truncated to 2 lines) -->
         <div class="flex-1 pt-2 overflow-hidden">
-          <p class="text-gray-200 text-xs break-all line-clamp-2 leading-relaxed"
-             [innerHTML]="highlightMessage(log.message)">
-          </p>
+          <p
+            class="text-gray-200 text-xs break-all line-clamp-2 leading-relaxed"
+            [innerHTML]="highlightMessage(log.message)"
+          ></p>
         </div>
 
         <!-- EXPANDED RAW VIEW: Shows the complete raw log string (conditionally rendered) -->
         @if (expandedIndex === i) {
-          <div class="mt-3 p-3 bg-black rounded border border-gray-800 animate-in fade-in slide-in-from-top-1">
-            <div class="text-gray-500 text-[10px] uppercase font-sans font-bold mb-1 tracking-wider">
+          <div
+            class="mt-3 p-3 bg-black rounded border border-gray-800 animate-in fade-in slide-in-from-top-1"
+          >
+            <div
+              class="text-gray-500 text-[10px] uppercase font-sans font-bold mb-1 tracking-wider"
+            >
               Raw String Engine Output:
             </div>
             <pre
-              class="text-gray-400 text-[11px] whitespace-pre-wrap select-all font-mono leading-relaxed">{{ log.raw }}</pre>
+              class="text-gray-400 text-[11px] whitespace-pre-wrap select-all font-mono leading-relaxed"
+              >{{ log.raw }}</pre
+            >
           </div>
         }
-
       </div>
     </div>
 
