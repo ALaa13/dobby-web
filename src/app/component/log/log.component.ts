@@ -7,7 +7,7 @@ import { DomSanitizer, SafeHtml } from '@angular/platform-browser';
 import { ParsedLog } from '../../service/log/log.types';
 
 @Component({
-  selector: 'app-logs',
+  selector: 'app-log',
   templateUrl: './log.component.html',
   styleUrls: ['./log.component.css'],
   imports: [FormsModule, ScrollingModule],

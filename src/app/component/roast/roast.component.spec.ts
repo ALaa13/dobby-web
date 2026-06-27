@@ -1,17 +1,17 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 
-import { FactDatabaseComponent } from './fact-database.component';
+import { RoastComponent } from './roast.component';
 
-describe('FactDatabaseComponent', () => {
-  let component: FactDatabaseComponent;
-  let fixture: ComponentFixture<FactDatabaseComponent>;
+describe('RoastComponent', () => {
+  let component: RoastComponent;
+  let fixture: ComponentFixture<RoastComponent>;
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      imports: [FactDatabaseComponent],
+      imports: [RoastComponent],
     }).compileComponents();
 
-    fixture = TestBed.createComponent(FactDatabaseComponent);
+    fixture = TestBed.createComponent(RoastComponent);
     component = fixture.componentInstance;
     await fixture.whenStable();
   });

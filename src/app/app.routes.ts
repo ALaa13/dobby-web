@@ -3,8 +3,9 @@ import { LoginComponent } from './component/login/login.component';
 import { DashboardComponent } from './component/dashboard/dashboard.component';
 import { AuthService } from './service/auth/auth.service';
 import { inject } from '@angular/core';
-import { LogComponent } from './component/logs/log.component';
-import { FactDatabaseComponent } from './component/fact-database/fact-database.component';
+import { LogComponent } from './component/log/log.component';
+import { RoastComponent } from './component/roast/roast.component';
+import { FactComponent } from './component/fact/fact.component';
 
 // Guard for Public Pages (LoginComponent)
 const guestGuard = async () => {
@@ -12,7 +13,7 @@ const guestGuard = async () => {
   const router = inject(Router);
   const url = router.url;
 
-  if (url === '/logs') {
+  if (url === '/log') {
     return true;
   }
 
@@ -41,7 +42,7 @@ const authGuard = async (route: ActivatedRouteSnapshot) => {
 
 export const routes: Routes = [
   { path: '', redirectTo: 'login', pathMatch: 'full' },
-  { path: 'logs', component: LogComponent, canActivate: [authGuard] },
+  { path: 'log', component: LogComponent, canActivate: [authGuard] },
   {
     path: 'login',
     component: LoginComponent,
@@ -51,7 +52,11 @@ export const routes: Routes = [
     path: 'dashboard',
     component: DashboardComponent,
     canActivate: [authGuard],
-    children: [{ path: '', component: FactDatabaseComponent }],
+    children: [
+      { path: '', redirectTo: 'facts', pathMatch: 'full' },
+      { path: 'facts', component: FactComponent },
+      { path: 'roasts', component: RoastComponent },
+    ],
   },
   { path: '**', redirectTo: 'login' },
 ];

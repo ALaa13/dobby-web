@@ -7,7 +7,7 @@ import { ParsedLog } from './log.types';
 
 @Injectable({ providedIn: 'root' })
 export class LogService {
-  private readonly logUrlEndPoint = new URL('logs/stream', environment.backendUrl).toString();
+  private readonly logUrlEndPoint = new URL('log/stream', environment.backendUrl).toString();
   private controller?: AbortController;
 
   // single source of truth for log arrays
@@ -23,7 +23,7 @@ export class LogService {
       if (isLoggedIn) {
         await this.startStreaming();
       } else {
-        console.log('Cleaning up logs stream due to global logout...');
+        console.log('Cleaning up log stream due to global logout...');
         this.stopStreaming();
       }
     });
@@ -38,7 +38,7 @@ export class LogService {
         Accept: 'text/event-stream',
       },
       signal: this.controller.signal,
-      openWhenHidden: true, // Keep collecting logs safely even if on different Tab!
+      openWhenHidden: true, // Keep collecting log safely even if on different Tab!
 
       onopen: async (response) => {
         if (response.ok && response.headers.get('content-type')?.includes('text/event-stream')) {
@@ -69,7 +69,7 @@ export class LogService {
       this.controller.abort(); // instantly kill the active HTTP socket stream connection
       this.controller = undefined; // Clear it out
 
-      // Clear the arrays so the next user doesn't see old data logs
+      // Clear the arrays so the next user doesn't see old data log
       this.masterLogs = [];
       this.logs$.next([]);
       console.log('🔌 Global SSE log stream successfully disconnected.');

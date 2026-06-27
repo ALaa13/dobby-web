@@ -7,7 +7,7 @@
       <h3 class="text-white font-semibold">Application Logs</h3>
 
       <div class="flex gap-3">
-        <!-- Copy logs to clipboard button -->
+        <!-- Copy log to clipboard button -->
         <button
           (click)="copyLogs()"
           class="px-3 py-1 text-sm bg-gray-600 hover:bg-gray-700 text-white rounded transition"
@@ -15,7 +15,7 @@
           📋 Copy
         </button>
 
-        <!-- Download logs as file button -->
+        <!-- Download log as file button -->
         <button
           (click)="downloadLogs()"
           class="px-3 py-1 text-sm bg-gray-600 hover:bg-gray-700 text-white rounded transition"
@@ -23,7 +23,7 @@
           💾 Download
         </button>
 
-        <!-- Clear all displayed logs button -->
+        <!-- Clear all displayed log button -->
         <button
           (click)="clearLogs()"
           class="px-3 py-1 text-sm bg-red-600 hover:bg-red-700 text-white rounded transition"
@@ -62,7 +62,7 @@
         }
       </div>
 
-      <!-- SEARCH INPUT: Filter logs by text -->
+      <!-- SEARCH INPUT: Filter log by text -->
       <div class="flex-1 min-w-50">
         <input
           type="text"
@@ -84,7 +84,7 @@
         Highlight
       </label>
 
-      <!-- PAUSE TOGGLE: Stop streaming new logs temporarily -->
+      <!-- PAUSE TOGGLE: Stop streaming new log temporarily -->
       <label class="flex items-center gap-2 text-sm text-gray-300 cursor-pointer">
         <input type="checkbox" [(ngModel)]="paused" class="rounded" />
         Pause
@@ -92,7 +92,7 @@
     </div>
   </div>
 
-  <!-- VIRTUAL SCROLL VIEWPORT: Efficiently renders large lists of logs -->
+  <!-- VIRTUAL SCROLL VIEWPORT: Efficiently renders large lists of log -->
   <cdk-virtual-scroll-viewport
     #viewport
     itemSize="94"
@@ -174,7 +174,7 @@
       </div>
     </div>
 
-    <!-- EMPTY STATE: Displayed when no logs match the filters -->
+    <!-- EMPTY STATE: Displayed when no log match the filters -->
     @if (filteredLogs.length === 0) {
       <div class="flex items-center justify-center h-full text-gray-500 italic py-10">
         @if (filteredLogs.length === 0) {

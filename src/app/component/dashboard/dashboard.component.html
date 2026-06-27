@@ -1,4 +1,5 @@
 <div class="h-screen bg-slate-900 text-slate-100 flex relative overflow-hidden">
+  <!-- Backdrop for mobile sidebar panel layout -->
   @if (isSidebarOpen()) {
     <div
       (click)="isSidebarOpen.set(false)"
@@ -6,6 +7,7 @@
     ></div>
   }
 
+  <!-- Sidebar Nav remains intact -->
   <aside
     [class.-translate-x-full]="!isSidebarOpen()"
     [class.translate-x-0]="isSidebarOpen()"
@@ -15,11 +17,9 @@
       <div class="flex items-center justify-between px-2 py-4 border-b border-slate-800 mb-6">
         <div class="flex items-center gap-3">
           <div
-            class="relative w-15 h-15 bg-slate-800 rounded-lg overflow-hidden shrink-0 shadow-md shadow-indigo-500/10"
-          >
+            class="relative w-15 h-15 bg-slate-800 rounded-lg overflow-hidden shrink-0 shadow-md shadow-indigo-500/10">
             <img ngSrc="dobby.jpg" alt="Dobby Logo" class="object-cover" fill priority />
           </div>
-
           <span class="font-semibold tracking-wide text-lg text-white"> Dobby Panel </span>
         </div>
 
@@ -27,14 +27,8 @@
           (click)="isSidebarOpen.set(false)"
           class="lg:hidden p-1 text-slate-400 hover:text-white"
         >
-          <svg
-            xmlns="http://www.w3.org/2000/svg"
-            fill="none"
-            viewBox="0 0 24 24"
-            stroke-width="2"
-            stroke="currentColor"
-            class="w-5 h-5"
-          >
+          <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor"
+               class="w-5 h-5">
             <path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12" />
           </svg>
         </button>
@@ -42,15 +36,17 @@
 
       <nav class="space-y-1">
         <a
-          href="#"
-          class="flex items-center gap-3 px-3 py-2.5 rounded-xl bg-indigo-600 text-white font-medium shadow-lg shadow-indigo-600/10"
+          routerLink="/dashboard/facts"
+          routerLinkActive="bg-indigo-600 text-white shadow-lg shadow-indigo-600/10"
+          class="flex items-center gap-3 px-3 py-2.5 rounded-xl text-slate-400 hover:text-slate-200 hover:bg-slate-900/60 transition-all"
         >
           <span class="text-sm">Fact Database</span>
         </a>
 
         <a
-          href="#"
-          class="flex items-center gap-3 px-3 py-2.5 rounded-xl text-slate-400 hover:text-slate-200 hover:bg-slate-900/60"
+          routerLink="/dashboard/roasts"
+          routerLinkActive="bg-indigo-600 text-white shadow-lg shadow-indigo-600/10"
+          class="flex items-center gap-3 px-3 py-2.5 rounded-xl text-slate-400 hover:text-slate-200 hover:bg-slate-900/60 transition-all"
         >
           <span class="text-sm">Recent Roasts</span>
         </a>
@@ -67,56 +63,119 @@
           height="40"
           priority
         />
-
         <div class="flex flex-col min-w-0">
-          <span class="text-sm font-medium text-white truncate">
-            {{ user.display_name }}
-          </span>
+          <span class="text-sm font-medium text-white truncate">{{ user.display_name }}</span>
           <span class="text-xs text-slate-500"> Active Profile </span>
         </div>
       } @else {
-        <div
-          class="w-10 h-10 rounded-full bg-slate-800 animate-pulse border border-slate-700 shrink-0"
-        ></div>
+        <div class="w-10 h-10 rounded-full bg-slate-800 animate-pulse border border-slate-700 shrink-0"></div>
       }
     </div>
   </aside>
 
+  <!-- Main view section -->
   <main class="flex-1 flex flex-col min-w-0 overflow-hidden">
     <header
-      class="h-16 shrink-0 border-b border-slate-800 flex items-center justify-between px-4 lg:px-8 bg-slate-900/50 backdrop-blur-sm"
+      class="h-20 shrink-0 border-b border-slate-800 flex items-center justify-between px-4 lg:px-8 bg-slate-900/50 backdrop-blur-sm z-30"
     >
       <div class="flex items-center gap-3">
         <button
           (click)="isSidebarOpen.set(!isSidebarOpen())"
           class="lg:hidden p-2 -ml-2 rounded-lg text-slate-400 hover:text-white hover:bg-slate-800/50"
         >
-          <svg
-            xmlns="http://www.w3.org/2000/svg"
-            fill="none"
-            viewBox="0 0 24 24"
-            stroke-width="2"
-            stroke="currentColor"
-            class="w-6 h-6"
-          >
-            <path
-              stroke-linecap="round"
-              stroke-linejoin="round"
-              d="M3.75 6.75h16.5M3.75 12h16.5m-16.5 5.25h16.5"
-            />
+          <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor"
+               class="w-6 h-6">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M3.75 6.75h16.5M3.75 12h16.5m-16.5 5.25h16.5" />
           </svg>
         </button>
-
         <h2 class="text-md lg:text-lg font-semibold text-white">Server Dashboard</h2>
       </div>
 
-      <a
-        routerLink="/login"
-        (click)="handleLogout()"
-        class="text-sm font-medium text-slate-400 hover:text-rose-400 cursor-pointer decoration-0"
-      >
-        Logout
-      </a>
+      <!-- 👑 GLOBAL SERVER SELECTION DROPDOWN HOOKED INTO SERVICE LAYER -->
+      <div class="flex items-center gap-6">
+
+        <!-- 🔗 FULL SCREEN BACKDROP: Moved OUT of the relative container so it covers everything -->
+        @if (stateService.isDropdownOpen()) {
+          <div class="fixed inset-0 z-40 cursor-default" (click)="stateService.isDropdownOpen.set(false)"></div>
+        }
+
+        <div class="relative min-w-64 hidden sm:block z-50">
+          <button
+            (click)="stateService.isDropdownOpen.set(!stateService.isDropdownOpen())"
+            type="button"
+            class="w-full flex items-center justify-between bg-slate-950 border border-slate-800 text-xs text-slate-200 rounded-xl px-4 py-2.5 focus:outline-none focus:border-indigo-500 transition-all cursor-pointer"
+          >
+            <div class="flex items-center gap-2">
+              @if (stateService.activeGuild(); as guild) {
+                @if (guild.icon) {
+                  <img
+                    [ngSrc]="'https://cdn.discordapp.com/icons/' + guild.id + '/' + guild.icon + '.png'"
+                    alt="Server Icon"
+                    class="w-4 h-4 rounded-md object-cover"
+                    width="16"
+                    height="16"
+                  />
+                } @else {
+                  <div
+                    class="w-4 h-4 rounded-md bg-indigo-600 flex items-center justify-center text-[8px] font-bold text-white">
+                    {{ guild.name.substring(0, 2).toUpperCase() }}
+                  </div>
+                }
+                <span class="truncate max-w-40">{{ guild.name }}</span>
+              } @else {
+                <!-- 💡 Clean fallback placeholder text -->
+                <span class="text-slate-500">Select a Discord server</span>
+              }
+            </div>
+            <span class="text-slate-500 text-[10px] transition-transform duration-200"
+                  [class.rotate-180]="stateService.isDropdownOpen()">▼</span>
+          </button>
+
+          @if (stateService.isDropdownOpen()) {
+            <div
+              class="absolute right-0 left-0 mt-2 bg-slate-950 border border-slate-800 rounded-xl shadow-xl max-h-60 overflow-y-auto p-1.5 space-y-1 custom-scrollbar">
+              @for (guild of stateService.guilds(); track guild.id) {
+                <button
+                  (click)="stateService.selectGuild(guild.id)"
+                  type="button"
+                  class="w-full flex items-center gap-2 px-3 py-2 text-xs text-slate-300 hover:text-white hover:bg-slate-900 rounded-lg transition-colors text-left cursor-pointer"
+                  [class.bg-slate-900]="guild.id === stateService.selectedGuildId()"
+                  [class.text-indigo-400]="guild.id === stateService.selectedGuildId()"
+                >
+                  @if (guild.icon) {
+                    <img
+                      [ngSrc]="'https://cdn.discordapp.com/icons/' + guild.id + '/' + guild.icon + '.png'"
+                      alt=""
+                      class="w-4 h-4 rounded-md object-cover"
+                      width="16"
+                      height="16"
+                    />
+                  } @else {
+                    <div
+                      class="w-4 h-4 rounded-md bg-slate-800 border border-slate-700 flex items-center justify-center text-[8px] font-bold text-slate-400">
+                      {{ guild.name.substring(0, 2).toUpperCase() }}
+                    </div>
+                  }
+                  <span class="truncate flex-1">{{ guild.name }}</span>
+                  @if (guild.id === stateService.selectedGuildId()) {
+                    <span class="text-indigo-500 font-bold">✓</span>
+                  }
+                </button>
+              } @empty {
+                <div class="px-4 py-3 text-xs text-slate-500 text-center">No active Discord servers found</div>
+              }
+            </div>
+          }
+        </div>
+
+        <a
+          routerLink="/login"
+          (click)="handleLogout()"
+          class="text-sm font-medium text-slate-400 hover:text-rose-400 cursor-pointer decoration-0"
+        >
+          Logout
+        </a>
+      </div>
     </header>
 
     <div class="flex-1 min-h-0 p-4 lg:p-8 overflow-hidden">

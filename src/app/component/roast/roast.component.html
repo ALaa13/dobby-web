@@ -1,0 +1,357 @@
+<div class="h-full flex flex-col gap-4 overflow-hidden">
+
+  <!-- ── Header Bar ─────────────────────────────────────────────────────── -->
+  <div class="shrink-0 flex flex-col sm:flex-row sm:items-center justify-between gap-3
+              bg-slate-950/60 border border-slate-800/70 px-5 py-3.5 rounded-xl
+              backdrop-blur-sm">
+    <div class="flex items-center gap-3">
+      <!-- Live pulse indicator -->
+      @if (stateService.activeGuild()) {
+        <span class="relative flex h-2 w-2 shrink-0">
+          <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-indigo-400 opacity-60"></span>
+          <span class="relative inline-flex rounded-full h-2 w-2 bg-indigo-500"></span>
+        </span>
+      }
+      <h3 class="text-sm font-semibold text-white tracking-wide">Roast Stream</h3>
+      <div class="h-4 w-px bg-slate-800 hidden sm:block"></div>
+      <p class="text-xs text-slate-400 leading-snug">
+        @if (stateService.activeGuild(); as guild) {
+          Streaming logs for <span class="text-indigo-400 font-medium">{{ guild.name }}</span>
+        } @else {
+          <span class="text-slate-500">Select a server to begin</span>
+        }
+      </p>
+    </div>
+
+    <!-- Search -->
+    <div class="relative w-full sm:w-64">
+      <span
+        class="absolute left-2.5 top-1/2 -translate-y-1/2 text-slate-600 text-[11px] pointer-events-none select-none">🔍</span>
+      <input
+        type="text"
+        placeholder="Search roasts, personas, users…"
+        [value]="searchQuery()"
+        (input)="onSearchInput($event)"
+        [disabled]="!stateService.selectedGuildId()"
+        class="w-full bg-slate-950/80 border border-slate-800 focus:border-indigo-500/70
+               rounded-lg pl-7 pr-8 py-1.5 text-xs text-white placeholder:text-slate-600
+               focus:outline-none focus:ring-1 focus:ring-indigo-500/20
+               disabled:opacity-40 disabled:cursor-not-allowed transition-colors"
+      />
+      @if (searchQuery()) {
+        <button
+          (click)="resetSearch()"
+          class="absolute right-2.5 top-1/2 -translate-y-1/2 text-slate-500 hover:text-slate-300
+                 text-[10px] w-4 h-4 flex items-center justify-center rounded transition-colors">
+          ✕
+        </button>
+      }
+    </div>
+  </div>
+
+  <!-- ── Roast Card List ────────────────────────────────────────────────── -->
+  <div class="flex-1 min-h-0 overflow-y-auto custom-scrollbar space-y-3 pr-1">
+    @if (hasAnyRoasts()) {
+      @for (roast of filteredRoasts(); track roast.id) {
+        @let primary = getPrimaryTarget(roast);
+
+        <!-- Severity-coded left border: high (rose), mid (amber), low (emerald) -->
+        @let severityBorder = roast.severity_score >= 70 ? 'border-l-rose-500/60'
+          : roast.severity_score >= 40 ? 'border-l-amber-500/50'
+            : 'border-l-emerald-500/40';
+
+        <div
+          (click)="selectedQuoteCard.set(roast)"
+          class="group relative bg-slate-950/30 border border-slate-800/50
+                 border-l-2 {{ severityBorder }}
+                 hover:border-indigo-500/30 hover:bg-slate-900/20
+                 rounded-xl p-4 sm:p-5 flex flex-col gap-3.5
+                 transition-all duration-200 cursor-pointer
+                 animate-in fade-in slide-in-from-bottom-1"
+        >
+          <!-- Card Header -->
+          <div class="flex flex-wrap items-center justify-between gap-2 pb-3 border-b border-slate-900/80">
+            <div class="flex items-center gap-2 flex-wrap">
+              <!-- Persona Badge -->
+              <span class="inline-flex items-center gap-1 text-[10px] bg-slate-900/80 text-amber-400
+                           border border-amber-500/20 px-2 py-0.5 rounded-md font-mono font-semibold tracking-wide">
+                🎭 {{ roast.persona_used || 'Standard Dobby' }}
+              </span>
+
+              <!-- Primary Target -->
+              @if (primary?.user_profiles) {
+                <div class="flex items-center gap-1.5 text-xs text-slate-500">
+                  <span class="text-slate-600">→</span>
+                  @if (primary?.user_profiles?.avatar_hash) {
+                    <img
+                      [ngSrc]="'https://cdn.discordapp.com/avatars/' + primary?.discord_user_id + '/' + primary?.user_profiles?.avatar_hash + '.png'"
+                      alt="Avatar"
+                      width="16"
+                      height="16"
+                      class="w-4 h-4 rounded-full object-cover ring-1 ring-slate-700"
+                    />
+                  }
+                  <span class="text-slate-300 font-medium">&#64;{{ primary?.user_profiles?.display_name }}</span>
+                </div>
+              }
+            </div>
+
+            <div class="flex items-center gap-2.5 ml-auto">
+              <!-- Scores Pill -->
+              <div class="flex items-center gap-2 bg-slate-950/80 px-2.5 py-1 rounded-lg border border-slate-800/60">
+                <span class="text-[10px] text-slate-500 leading-none">
+                  🔥 <b class="text-rose-400 font-mono">{{ roast.severity_score }}%</b>
+                </span>
+                <span class="w-px h-3 bg-slate-800"></span>
+                <span class="text-[10px] text-slate-500 leading-none">
+                  🎯 <b class="text-emerald-400 font-mono">{{ roast.burn_accuracy }}%</b>
+                </span>
+              </div>
+
+              <!-- Timestamp -->
+              <span class="text-[10px] text-slate-600 font-mono tabular-nums">
+                {{ roast.created_at | date:'h:mm a' }}
+              </span>
+
+              <!-- Copy Button (visible on hover) -->
+              <button
+                (click)="copyToClipboard(roast, $event)"
+                class="opacity-0 group-hover:opacity-100 p-1.5 text-slate-500 hover:text-indigo-400
+                       rounded-md hover:bg-slate-800/80 transition-all duration-150 text-xs leading-none"
+                title="Copy roast text">
+                📋
+              </button>
+            </div>
+          </div>
+
+          <!-- Card Body -->
+          <div class="flex flex-col md:flex-row gap-3.5 items-start">
+            <!-- Roast Text -->
+            <div
+              [innerHTML]="parseRoastContent(roast.roast_text, roast.roast_targets)"
+              class="flex-1 text-base text-slate-300 leading-relaxed
+                     bg-slate-950/50 border border-slate-900/80 rounded-lg p-3.5
+                     select-text whitespace-pre-line
+                     group-hover:text-slate-200 group-hover:border-slate-800/60
+                     transition-colors font-normal"
+            ></div>
+
+            <!-- Targets Panel -->
+            @if (roast.roast_targets && roast.roast_targets.length > 0) {
+              <div class="w-full md:w-44 shrink-0 bg-slate-950/30 border border-slate-900/80
+                          rounded-lg p-2.5 flex flex-col gap-1.5">
+                <span class="text-[9px] text-slate-600 font-semibold uppercase tracking-widest mb-0.5">
+                  Targets Hit · {{ roast.roast_targets.length }}
+                </span>
+                <div class="flex flex-wrap md:flex-col gap-1">
+                  @for (target of roast.roast_targets; track target.discord_user_id) {
+                    <div
+                      [title]="target.damage_reason"
+                      class="flex items-center justify-between text-[11px] text-slate-400
+                             bg-slate-950/60 px-2 py-1 rounded-md border border-slate-800/40
+                             hover:border-slate-700/60 transition-colors w-full gap-1.5">
+                      <div class="flex items-center gap-1.5 min-w-0">
+                        @if (target.user_profiles?.avatar_hash) {
+                          <img
+                            [ngSrc]="'https://cdn.discordapp.com/avatars/' + target.discord_user_id + '/' + target.user_profiles?.avatar_hash + '.png'"
+                            alt="Avatar"
+                            width="16"
+                            height="16"
+                            class="w-4 h-4 rounded-full object-cover ring-1 ring-slate-700/60 shrink-0"
+                          />
+                        } @else {
+                          <!-- Initials fallback -->
+                          <span class="w-4 h-4 rounded-full bg-slate-800 border border-slate-700/40
+                                       text-[8px] text-slate-400 flex items-center justify-center shrink-0 font-semibold">
+                            {{ (target.user_profiles?.display_name || '?')[0].toUpperCase() }}
+                          </span>
+                        }
+                        <span class="truncate text-slate-300">
+                          {{ target.user_profiles?.display_name || 'Unknown' }}
+                        </span>
+                      </div>
+                      @if (target.discord_user_id === roast.clapped_the_most_id) {
+                        <span class="text-[9px] shrink-0 bg-rose-950/60 border border-rose-900/50
+                                     text-rose-400 px-1 py-0.5 rounded font-mono leading-none"
+                              title="Clapped the hardest">💀</span>
+                      }
+                    </div>
+                  }
+                </div>
+              </div>
+            }
+          </div>
+        </div>
+      }
+    } @else {
+      <!-- Empty State -->
+      <div class="h-full flex flex-col items-center justify-center gap-3 p-12 text-center
+                  bg-slate-800/5 border border-slate-800/30 rounded-xl border-dashed">
+        <span class="text-3xl opacity-30 select-none">🎭</span>
+        <div class="flex flex-col gap-1">
+          <p class="text-xs font-medium text-slate-400">
+            {{ !stateService.selectedGuildId() ? 'No server selected' : 'No roasts logged yet' }}
+          </p>
+          <p class="text-[11px] text-slate-600 max-w-55 leading-relaxed">
+            {{
+              !stateService.selectedGuildId()
+                ? 'Pick a live Discord server from the sidebar to stream its roast history.'
+                : 'Roasts will appear here once Dobby fires its first command in this server.'
+            }}
+          </p>
+        </div>
+      </div>
+    }
+  </div>
+</div>
+
+<!-- ── Detail Modal ────────────────────────────────────────────────────── -->
+@if (selectedQuoteCard(); as activeCard) {
+  <div
+    (click)="selectedQuoteCard.set(null)"
+    class="fixed inset-0 z-50 flex justify-center items-start overflow-y-auto
+           p-4 sm:p-8 bg-slate-950/90 backdrop-blur-md custom-scrollbar">
+    <div
+      (click)="$event.stopPropagation()"
+      class="w-full max-w-5xl bg-slate-900 border border-slate-800/80
+             rounded-2xl shadow-2xl shadow-black/60 relative overflow-hidden
+             my-4 sm:my-10 flex flex-col"
+    >
+      <!-- Ambient glows -->
+      <div class="absolute -top-20 -left-20 w-56 h-56 bg-indigo-500/8 blur-3xl rounded-full pointer-events-none"></div>
+      <div
+        class="absolute -bottom-20 -right-20 w-56 h-56 bg-rose-500/8 blur-3xl rounded-full pointer-events-none"></div>
+
+      <!-- Modal Header -->
+      <div class="relative flex items-center justify-between gap-3 px-6 pt-6 pb-4
+                  border-b border-slate-800/60">
+        <div class="flex items-center gap-3">
+          <div class="w-8 h-8 rounded-lg bg-amber-500/10 border border-amber-500/20
+                      flex items-center justify-center text-base shrink-0">
+            🔥
+          </div>
+          <div>
+            <p class="text-[10px] text-slate-500 uppercase tracking-widest font-mono mb-0.5">Persona</p>
+            <h4 class="text-sm font-semibold text-amber-400 font-mono leading-none">
+              {{ activeCard.persona_used || 'Standard Dobby' }}
+            </h4>
+          </div>
+          <div class="h-8 w-px bg-slate-800 hidden sm:block mx-1"></div>
+          <span class="text-[10px] text-slate-600 font-mono hidden sm:block">
+            {{ activeCard.created_at | date:'MMM d, y · h:mm a' }}
+          </span>
+        </div>
+        <div class="flex items-center gap-2">
+          <button
+            (click)="copyToClipboard(activeCard, $event)"
+            class="text-[11px] bg-indigo-950/60 text-indigo-400 border border-indigo-900/60
+                   font-medium px-3 py-1.5 rounded-lg hover:bg-indigo-900/60
+                   transition-colors leading-none">
+            Copy Text
+          </button>
+          <button
+            (click)="selectedQuoteCard.set(null)"
+            class="p-1.5 text-slate-600 hover:text-slate-300 hover:bg-slate-800
+                   rounded-lg transition-all text-sm leading-none">
+            ✕
+          </button>
+        </div>
+      </div>
+
+      <!-- Modal Main Layout Container -->
+      <div class="flex flex-col sm:flex-row gap-6 px-6 py-5 items-start">
+
+        <!-- Roast Text Box -->
+        <div class="relative flex-1 min-w-0">
+          <span class="absolute top-0 left-1 text-6xl font-serif text-slate-800/25 select-none leading-none">"</span>
+          <div
+            [innerHTML]="parseRoastContent(activeCard.roast_text, activeCard.roast_targets)"
+            class="relative z-10 text-sm sm:text-[15px] text-slate-200 font-normal
+             leading-relaxed italic select-text whitespace-pre-line pl-2
+             border-l-2 border-indigo-500/30 ml-3"
+          ></div>
+        </div>
+
+        <!-- Expanded Wide Side-by-Side Targets Sidebar -->
+        @if (activeCard.roast_targets && activeCard.roast_targets.length > 0) {
+          <div class="w-full sm:w-80 shrink-0 flex flex-col gap-2 sm:border-l sm:border-slate-800/60 sm:pl-4">
+            <span class="text-[9px] text-slate-600 font-semibold uppercase tracking-widest font-mono">
+              Damage Report · {{ activeCard.roast_targets.length }}
+              target{{ activeCard.roast_targets.length > 1 ? 's' : '' }}
+            </span>
+            <div class="flex flex-col gap-1.5 overflow-y-auto custom-scrollbar max-h-96 pr-0.5">
+              @for (tgt of activeCard.roast_targets; track tgt.discord_user_id) {
+                <div class="bg-slate-950/50 border border-slate-800/50 rounded-xl
+                      p-2.5 flex items-start gap-2.5 text-xs
+                      hover:border-slate-700/60 transition-colors">
+                  @if (tgt.user_profiles?.avatar_hash) {
+                    <img
+                      [ngSrc]="'https://cdn.discordapp.com/avatars/' + tgt.discord_user_id + '/' + tgt.user_profiles?.avatar_hash + '.png'"
+                      alt="Avatar"
+                      width="24"
+                      height="24"
+                      class="w-6 h-6 rounded-full object-cover ring-1 ring-slate-700 shrink-0 mt-0.5"
+                    />
+                  } @else {
+                    <span class="w-6 h-6 rounded-full bg-slate-800 border border-slate-700/40
+                           text-[10px] text-slate-400 flex items-center justify-center
+                           shrink-0 mt-0.5 font-semibold">
+                      {{ (tgt.user_profiles?.display_name || '?')[0].toUpperCase() }}
+                    </span>
+                  }
+                  <div class="flex-1 min-w-0">
+                    <div class="flex items-center gap-1.5 mb-0.5 flex-wrap">
+                      <span class="font-semibold text-slate-200 text-[12px] truncate">
+                        {{ tgt.user_profiles?.display_name || 'Unknown User' }}
+                      </span>
+                      @if (tgt.discord_user_id === activeCard.clapped_the_most_id) {
+                        <span class="inline-flex items-center gap-0.5 text-[9px]
+                               bg-rose-950/60 text-rose-400 border border-rose-900/50
+                               px-1.5 py-0.5 rounded font-mono leading-none shrink-0">
+                          💀 hardest hit
+                        </span>
+                      }
+                    </div>
+                    <p class="text-slate-500 leading-normal text-[11px] font-normal select-text">
+                      {{ tgt.damage_reason }}
+                    </p>
+                  </div>
+                </div>
+              }
+            </div>
+          </div>
+        }
+
+      </div>
+
+      <!-- Score Bars Footer -->
+      <div class="grid grid-cols-2 gap-4 bg-slate-950/60 border-t border-slate-900/80
+                  px-6 py-4 font-mono text-[11px]">
+        <div class="flex flex-col gap-2">
+          <div class="flex items-center justify-between">
+            <span class="text-slate-500">Severity</span>
+            <span class="text-rose-400 font-semibold tabular-nums">{{ activeCard.severity_score }}%</span>
+          </div>
+          <div class="w-full bg-slate-900 h-1.5 rounded-full overflow-hidden">
+            <div class="bg-linear-to-r from-rose-600 to-rose-400 h-full rounded-full
+                        transition-all duration-700 ease-out"
+                 [style.width.%]="activeCard.severity_score">
+            </div>
+          </div>
+        </div>
+        <div class="flex flex-col gap-2">
+          <div class="flex items-center justify-between">
+            <span class="text-slate-500">Accuracy</span>
+            <span class="text-emerald-400 font-semibold tabular-nums">{{ activeCard.burn_accuracy }}%</span>
+          </div>
+          <div class="w-full bg-slate-900 h-1.5 rounded-full overflow-hidden">
+            <div class="bg-linear-to-r from-emerald-600 to-emerald-400 h-full rounded-full
+                        transition-all duration-700 ease-out"
+                 [style.width.%]="activeCard.burn_accuracy">
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+}
