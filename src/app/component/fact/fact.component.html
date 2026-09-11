@@ -15,7 +15,7 @@
     </div>
   </div>
 
-  <div class="shrink-0 grid grid-cols-1 sm:grid-cols-3 gap-4">
+  <div class="shrink-0 grid grid-cols-1 sm:grid-cols-2 gap-4">
     <div class="bg-slate-800/30 border border-slate-800/60 p-4 rounded-xl">
       <span class="text-xs font-medium text-slate-500 uppercase tracking-wider">Indexed Profiles</span>
       <h4 class="text-2xl font-bold text-white mt-1">{{ stateService.selectedGuildId() ? '142' : '0' }}</h4>
@@ -26,11 +26,6 @@
       <h4 class="text-2xl font-bold text-indigo-400 mt-1">{{ stateService.selectedGuildId() ? '1,204' : '0' }}</h4>
     </div>
 
-    <div class="bg-slate-800/30 border border-slate-800/60 p-4 rounded-xl">
-      <span class="text-xs font-medium text-slate-500 uppercase tracking-wider">Avg Roastability Score</span>
-      <h4
-        class="text-2xl font-bold text-emerald-400 mt-1">{{ stateService.selectedGuildId() ? '8.4 / 10' : '0.0 / 10' }}</h4>
-    </div>
   </div>
 
   <div class="flex-1 min-h-0 bg-slate-800/40 border border-slate-800 rounded-2xl overflow-hidden flex flex-col">
@@ -77,8 +72,8 @@
               <h3 class="text-base font-semibold text-white">Danger Zone: Reset Guild Facts</h3>
             </div>
             <p class="text-xs text-slate-400 leading-relaxed">
-              Are you absolutely sure you want to wipe all user profiles and saved facts for this server? This action is
-              <strong class="text-rose-300">permanent</strong> and cannot be undone.
+              This will permanently delete all saved facts for this server. User profiles and historical roast data are
+              preserved.
             </p>
             <div class="flex items-center justify-end gap-2.5 pt-2">
               <button
@@ -89,7 +84,7 @@
               <button
                 (click)="confirmReset(); showResetConfirm.set(false)"
                 class="px-4 py-2 text-xs font-medium text-rose-300 bg-rose-950/60 hover:bg-rose-900/80 border border-rose-800/80 rounded-xl cursor-pointer transition-colors"
-              >Yes, Delete Everything
+              >Yes, Delete Saved Facts
               </button>
             </div>
           </div>
@@ -109,7 +104,7 @@
                     @if (user.avatar_hash) {
                       <img
                         [ngSrc]="'https://cdn.discordapp.com/avatars/' + user.discord_user_id + '/' + user.avatar_hash + (user.avatar_hash.startsWith('a_') ? '.gif' : '.png') + '?size=64'"
-                        [alt]="user.display_name"
+                        [alt]="user.display_name || user.discord_user_id"
                         class="w-9 h-9 rounded-full border border-indigo-500/30 object-cover"
                         (error)="user.avatar_hash = null"
                         width="36"
@@ -118,11 +113,11 @@
                     } @else {
                       <div
                         class="w-9 h-9 rounded-full bg-indigo-950 border border-indigo-500/30 flex items-center justify-center font-bold text-xs text-indigo-300 uppercase">
-                        {{ user.display_name.substring(0, 2) || '??' }}
+                        {{ (user.display_name || user.discord_user_id || '??').substring(0, 2) }}
                       </div>
                     }
                     <div>
-                      <h4 class="text-sm font-semibold text-white">{{ user.display_name }}</h4>
+                      <h4 class="text-sm font-semibold text-white">{{ user.display_name || user.discord_user_id || 'Unknown User' }}</h4>
                       <p class="text-xs text-slate-500">ID: {{ user.discord_user_id }}</p>
                     </div>
                   </div>

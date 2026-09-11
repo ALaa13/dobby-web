@@ -1,5 +1,5 @@
 export interface NestedUserProfile {
-  display_name: string;
+  display_name: string | null;
   avatar_hash: string | null;
 }
 
@@ -12,7 +12,7 @@ export interface RoastTargetDb {
 }
 
 export interface RoastLogResponse {
-  id: string;
+  id: string | null;
   guild_id: string;
   channel_id: string;
   roast_text: string;

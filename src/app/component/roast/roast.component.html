@@ -52,7 +52,7 @@
   <!-- ── Roast Card List ────────────────────────────────────────────────── -->
   <div class="flex-1 min-h-0 overflow-y-auto custom-scrollbar space-y-3 pr-1">
     @if (hasAnyRoasts()) {
-      @for (roast of filteredRoasts(); track roast.id) {
+      @for (roast of filteredRoasts(); track roast.id ?? roast.created_at) {
         @let primary = getPrimaryTarget(roast);
 
         <!-- Severity-coded left border: high (rose), mid (amber), low (emerald) -->
@@ -91,7 +91,7 @@
                       class="w-4 h-4 rounded-full object-cover ring-1 ring-slate-700"
                     />
                   }
-                  <span class="text-slate-300 font-medium">&#64;{{ primary?.user_profiles?.display_name }}</span>
+                  <span class="text-slate-300 font-medium">&#64;{{ primary?.user_profiles?.display_name || primary?.discord_user_id || 'Unknown User' }}</span>
                 </div>
               }
             </div>
